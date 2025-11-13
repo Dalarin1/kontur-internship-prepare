@@ -1,6 +1,7 @@
 import os
 import random
 import string
+from queue import Queue
 
 
 def randomseq(a, b, count=None):
@@ -18,8 +19,50 @@ def randomseq(a, b, count=None):
 
     return res
 
-def __randgraph():
-    return -1
+
+# def randgraph(rooms_count=None):
+#     rooms = [1, 2]
+#     coridors = set(((1, 2),))
+
+#     if rooms_count is None:
+#         rooms_count = random.randint(2, 7)
+
+#     for i in range(rooms_count):
+#         if random.randint(0, 1) == 0:
+#             roomnum = max(rooms) + 1
+#             rooms.append(roomnum)
+#         else:
+#             roomnum = random.choice(rooms)
+
+#         room_from = random.choice(rooms)
+#         while room_from == roomnum:
+#             room_from = random.choice(rooms)
+
+#         new_coridor = (room_from, roomnum)
+
+#         coridors.add(new_coridor)
+
+#     coridors = [list(i) for i in list(coridors)]
+#     for i in range(len(coridors)):
+#         coridors[i] += [random.randint(1, 9)]
+#     return coridors
+
+
+def randgraph(rooms_count, coridors_count):
+    rooms = [i for i in range(1, rooms_count + 1)]
+    coridors:set[tuple] = set()
+
+    for _ in range(coridors_count):
+        r_from, r_to = random.choice(rooms), random.choice(rooms)
+        while (r_from, r_to) in coridors or r_from == r_to:
+            r_from, r_to = random.choice(rooms), random.choice(rooms)
+        coridors.add((r_from, r_to))
+
+    coridors = [list(pair) for pair in coridors]
+    for i in range(len(coridors)):
+        coridors[i] += [random.randint(0, 10)]
+    return coridors
+
 
 # winter-2024
 TEST_DIR = os.path.join(os.getcwd(), "test")
@@ -280,8 +323,6 @@ class Winter2024:
         Winter2024.gen_E()
 
 
-# Winter2024.generate()
-
 curdir = os.path.join(TEST_DIR, "summer-2025")
 
 
@@ -368,22 +409,36 @@ class Summer2025:
                 f.write(f"@test-{i+1}\n")
                 f.write(f"{N} {M}\n")
                 f.write(ns)
-                
+
     @staticmethod
     def gen_D():
+
         file_in = os.path.join(curdir, "d.in")
         test_count = 30
         basetests = [
-            "6 6 4\n1 2 1\n2 4 3\n4 5 6\n5 6 5\n4 3 2\n3 2 7\n"
-            "6 6 4\n1 2 4\n2 4 3\n4 5 6\n5 6 5\n4 3 2\n3 2 3\n"
-            "2 1 2\n1 2 0\n"
+            "6 6 4\n1 2 1\n2 4 3\n4 5 6\n5 6 5\n4 3 2\n3 2 7\n",
+            "6 6 4\n1 2 4\n2 4 3\n4 5 6\n5 6 5\n4 3 2\n3 2 3\n",
+            "2 1 2\n1 2 0\n",
         ]
 
-        with open(file_in, 'w', encoding='utf-8') as f:
+        with open(file_in, "w", encoding="utf-8") as f:
             for i, test in enumerate(basetests):
                 f.write(f"@test-{i}\n")
                 f.write(test)
-            
+            for i in range(2, test_count):
+                # a, b, c = (random.randint(1, 20) for _ in range(3))
+                a = random.randint(2, 10)
+                b = random.randint(1, (a*a // 2))
+                c = random.randint(0, 30)
+                
+                graph = "\n".join(
+                    " ".join(str(j) for j in i) for i in randgraph(rooms_count=a, coridors_count=b)
+                )
+
+                test_id = f"@test-{i+1}\n"
+                f.write(test_id)
+                f.write(f"{a} {b} {c}\n")
+                f.write(f"{graph}\n")
 
     @staticmethod
     def gen_E():
@@ -391,5 +446,5 @@ class Summer2025:
 
 
 if __name__ == "__main__":
+    # print(randgraph(4, 5))
     Summer2025.gen_D()
-    
