@@ -1,7 +1,7 @@
 import os
 import random
 import string
-from queue import Queue
+from math import comb
 
 
 def randomseq(a, b, count=None):
@@ -20,37 +20,9 @@ def randomseq(a, b, count=None):
     return res
 
 
-# def randgraph(rooms_count=None):
-#     rooms = [1, 2]
-#     coridors = set(((1, 2),))
-
-#     if rooms_count is None:
-#         rooms_count = random.randint(2, 7)
-
-#     for i in range(rooms_count):
-#         if random.randint(0, 1) == 0:
-#             roomnum = max(rooms) + 1
-#             rooms.append(roomnum)
-#         else:
-#             roomnum = random.choice(rooms)
-
-#         room_from = random.choice(rooms)
-#         while room_from == roomnum:
-#             room_from = random.choice(rooms)
-
-#         new_coridor = (room_from, roomnum)
-
-#         coridors.add(new_coridor)
-
-#     coridors = [list(i) for i in list(coridors)]
-#     for i in range(len(coridors)):
-#         coridors[i] += [random.randint(1, 9)]
-#     return coridors
-
-
 def randgraph(rooms_count, coridors_count):
     rooms = [i for i in range(1, rooms_count + 1)]
-    coridors:set[tuple] = set()
+    coridors: set[tuple] = set()
 
     for _ in range(coridors_count):
         r_from, r_to = random.choice(rooms), random.choice(rooms)
@@ -426,13 +398,14 @@ class Summer2025:
                 f.write(f"@test-{i}\n")
                 f.write(test)
             for i in range(2, test_count):
-                # a, b, c = (random.randint(1, 20) for _ in range(3))
+
                 a = random.randint(2, 10)
-                b = random.randint(1, (a*a // 2))
+                b = random.randint(1, comb(2, a))
                 c = random.randint(0, 30)
-                
+
                 graph = "\n".join(
-                    " ".join(str(j) for j in i) for i in randgraph(rooms_count=a, coridors_count=b)
+                    " ".join(str(j) for j in i)
+                    for i in randgraph(rooms_count=a, coridors_count=b)
                 )
 
                 test_id = f"@test-{i+1}\n"
@@ -440,11 +413,27 @@ class Summer2025:
                 f.write(f"{a} {b} {c}\n")
                 f.write(f"{graph}\n")
 
+    # TODO
     @staticmethod
     def gen_E():
-        pass
+        file_in = os.path.join(curdir, "e.in")
+        test_count = 30
+        basetests = [
+            "2 4 11\n3 3\n+ 1 3 another\n+ 1 2 secret\n+ 1 2 secret\nc 1 2 sec\np 2 2 new\n+ 2 4 string\nc 2 2 news\n+ 2 4 strong\nc 1 2 news\nc 1 4 str\nc 1 5 ano\n",
+            "3 8 11\n3 4 5\n+ 3 4 abcd\n+ 3 2 abcd\n+ 3 4 abee\n+ 3 2 abea\np 3 4 qq\np 3 2 qqe\nc 3 4 qqabc\nc 3 2 qqeab\nc 1 2 qqeabe\n+ 1 4 qqab\nc 1 4 qqab\n",
+            "2 2 5\n4 1\n+ 2 1 abc\n+ 2 1 abe\np 1 3 pr\nc 1 3 pr\nc 2 1 prabc\n",
+        ]
+        with open(file_in, "w", encoding="utf-8") as f:
+            for i, test in enumerate(basetests):
+                f.write(f"@test-{i}\n")
+                f.write(test)
+            for i in range(2, test_count):
+                N, K, Q = (random.randint(1, 10) for _ in range(3))
+                ms = [random.randint(1, 10) for _ in range(N)]
+                
+                pass
 
 
 if __name__ == "__main__":
-    # print(randgraph(4, 5))
-    Summer2025.gen_D()
+
+    Summer2025.gen_E()
