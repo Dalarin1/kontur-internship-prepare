@@ -1,30 +1,62 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <set>
 
-template <typename T>
-inline T min(T a, T b)
+bool is_ship_alive(const std::vector<std::vector<char>> &map, int i, int j)
 {
-    if (a <= b)
+    int height = map.size();
+    int width = map[0].size();
+    bool result = false;
+    auto ship = std::queue<std::pair<int, int>>();
+    auto visited = std::set<std::pair<int, int>>();
+    ship.emplace(std::pair<int, int>(i, j));
+
+    std::pair<int, int> temp;
+
+#define y temp.first
+#define x temp.second
+
+    while (!ship.empty())
     {
-        return a;
+        temp = ship.front();
+        visited.insert(temp);
+        ship.pop();
+        if (map[y][x] == 'X')
+        {
+            return true;
+        }
+        if (map[y][x] == '~')
+        {
+            // Осмотр и добавление еще не посещенных соседей соседей, которые не '.'
+            if (y > 0 && map[y - 1][x] != '.' && visited.find(std::pair(y - 1, x)) == visited.end())
+            {
+                ship.push(std::pair(y - 1, x));
+            }
+            if (y < height - 1 && map[y + 1][x] != '.' && visited.find(std::pair(y + 1, x)) == visited.end())
+            {
+                ship.push(std::pair(y + 1, x));
+            }
+            if (x > 0 && map[y][x - 1] != '.' && visited.find(std::pair(y, x - 1)) == visited.end())
+            {
+                ship.push(std::pair(y, x - 1));
+            }
+            if (x < width - 1 && map[y][x + 1] != '.' && visited.find(std::pair(y, x + 1)) == visited.end())
+            {
+                ship.push(std::pair(y, x + 1));
+            }
+        }
     }
-    return b;
-}
-template <typename T>
-inline T max(T a, T b)
-{
-    if (a > b)
-    {
-        return a;
-    }
-    return b;
+#undef x
+#undef y
+    return false;
 }
 
 int main()
 {
     int height, width, shot_count;
     std::cin >> height >> width >> shot_count;
-    // храним карту булов, где 1 - корабль, 0 - не корабль, 2 - подбитый кусок корабля
+    // храним карту чаров, где X - корабль, . - не корабль, ~ - подбитый кусок корабля
     std::vector<std::vector<char>> map;
     char temp;
 
@@ -34,37 +66,34 @@ int main()
         for (int j = 0; j < width; j++)
         {
             std::cin >> temp;
-
-            // По условию X обозначает часть корабля в данной точке
-            map[i].push_back(static_cast<char>(temp == 'X'));
+            map[i].push_back(temp);
         }
     }
     int i, j;
-    bool has_neighbour = false;
+
     while (shot_count--)
     {
-        has_neighbour = false;
+
         std::cin >> i >> j;
+        // входные координаты начинаются с 1, 1
         i--;
         j--;
-        if (map[i][j] == 0)
+        if (map[i][j] == '.')
         {
             std::cout << "MISS" << std::endl;
             continue;
         }
-        if (i > 0 && map[i-1][j] > 0){has_neighbour = true;}
-        else if(i < height - 1 && map[i+1][j] > 0){has_neighbour = true;}
-        else if(j > 0 && map[i][j-1] > 0){has_neighbour = true;}
-        else if(j < width - 1 && map[i][j+1] > 0){has_neighbour=true;}
+
         
-        if (map[i][j] == 1 && has_neighbour)
+        map[i][j] = '~';
+        if (is_ship_alive(map, i, j))
         {
             std::cout << "HIT" << std::endl;
-            map[i][j] = false;
-            continue;
         }
-        std::cout << "DESTROY" << std::endl;
-        map[i][j] = false;
+        else
+        {
+            std::cout << "DESTROY" << std::endl;
+        }
     }
     return 0;
 }
