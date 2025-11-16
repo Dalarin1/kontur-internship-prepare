@@ -28,7 +28,7 @@ bool is_ship_alive(const std::vector<std::vector<char>> &map, int i, int j)
         }
         if (map[y][x] == '~')
         {
-            // Осмотр и добавление еще не посещенных соседей соседей, которые не '.'
+            // Осмотр и добавление еще не посещенных соседей, которые не '.'
             if (y > 0 && map[y - 1][x] != '.' && visited.find(std::pair(y - 1, x)) == visited.end())
             {
                 ship.push(std::pair(y - 1, x));
