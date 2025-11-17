@@ -4,20 +4,28 @@ import string
 from math import comb
 
 
-def randomseq(a, b, count=None):
+def random_sequencce(start, end, num_points=None):
+    """Генерирует случайную возрастающую последовательность в интервале [start, end]."""
+    interval_length = abs(end - start)
 
-    seqlen = abs(b - a)
-    if count is None:
-        count = random.randint(1, seqlen)
-    res = [-100 for _ in range(count)]
+    if num_points is None:
+        num_points = random.randint(1, interval_length)
 
-    for i in range(count):
-        if i == 0:
-            res[0] = random.randint(a, a + int(seqlen / count))
-        else:
-            res[i] = random.randint(res[i - 1] + 1, res[i - 1] + int(seqlen / count))
+    if num_points <= 0:
+        return []
 
-    return res
+    sequence = []
+    current = start
+
+    step = max(1, interval_length // num_points)
+
+    for _ in range(num_points):
+        current = random.randint(current, min(current + step, end))
+        sequence.append(current)
+        if current >= end:
+            break
+
+    return sequence
 
 
 def randgraph(rooms_count, coridors_count):
@@ -353,8 +361,8 @@ class Summer2025:
             for i in range(1, test_count):
                 N = random.randint(1, 10)
                 M = random.randint(1, 10)
-                ns = " ".join(str(i) for i in randomseq(1, 30, N)) + "\n"
-                ms = " ".join(str(i) for i in randomseq(1, 30, M)) + "\n"
+                ns = " ".join(str(i) for i in random_sequencce(1, 30, N)) + "\n"
+                ms = " ".join(str(i) for i in random_sequencce(1, 30, M)) + "\n"
 
                 f.write(f"@test-{i+1}\n")
                 f.write(f"{N} {M}\n")
@@ -430,7 +438,7 @@ class Summer2025:
             for i in range(2, test_count):
                 N, K, Q = (random.randint(1, 10) for _ in range(3))
                 ms = [random.randint(1, 10) for _ in range(N)]
-                
+
                 pass
 
 
